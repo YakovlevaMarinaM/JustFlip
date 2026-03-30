@@ -23,8 +23,7 @@ from sqlalchemy import cast
 from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="JustFlip API", description="Веб-приложение для изучения иностранных слов JustFlip!")
 #Создаёт экземпляр приложения FastAP. Это точка входа всего сервера. Все маршруты регистрируются через этот объект
-
-# Добавляем CORS middleware
+#Добавляем CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
