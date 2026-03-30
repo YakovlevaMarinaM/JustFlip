@@ -49,8 +49,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool: #Фун�
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password: str) -> str: #Функция для создания хэша пароля
-    """Создаёт хэш из пароля"""
+
+def get_password_hash(password):
+    # bcrypt имеет ограничение 72 байта, обрезаем пароль если нужно
+    if isinstance(password, str) and len(password) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
 #------------------------------------------------------------------------------------------------------------------------
 
