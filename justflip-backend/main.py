@@ -640,7 +640,7 @@ import models, database, schemas, auth
 from sqlalchemy import cast
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="JustFlip API", description="Веб-приложение для изучения иностранных слов JustFlip!")
+app = FastAPI(title="JustFlip API", description="Web-app for learning foreign words JustFlip!")
 
 # Добавляем CORS middleware
 app.add_middleware(
@@ -672,7 +672,7 @@ async def health():
 
 @app.post("/api/register", response_model=schemas.UserResponse)
 async def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
-    """Регистрация нового пользователя"""
+    # Проверяем, существует ли пользователь
     db_user = db.query(models.User).filter(
         (models.User.username == user.username) |
         (models.User.email == user.email)
@@ -684,6 +684,7 @@ async def register(user: schemas.UserCreate, db: Session = Depends(database.get_
             detail="Username or email already registered"
         )
 
+    # Создаём нового пользователя
     hashed_password = auth.get_password_hash(user.password)
     new_user = models.User(
         username=user.username,
@@ -702,7 +703,7 @@ async def login(
         form_data: OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(database.get_db)
 ):
-    """Вход пользователя и получение токена"""
+    # Проверяем логин/пароль
     user = auth.authenticate_user(db, form_data.username, form_data.password)
 
     if not user:
@@ -712,6 +713,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Создаём токен
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         data={"sub": user.username},
@@ -725,7 +727,7 @@ async def login(
 async def get_current_user(
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить данные текущего пользователя"""
+    # Получить данные текущего пользователя
     return current_user
 
 
@@ -735,7 +737,7 @@ async def create_deck(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Создать новую колоду"""
+    # Создать новую колоду
     new_deck = models.Deck(
         title=deck.title,
         description=deck.description,
@@ -752,7 +754,7 @@ async def get_decks(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить все колоды пользователя"""
+    # Получить все колоды пользователя
     decks = db.query(models.Deck).filter(
         models.Deck.user_id == current_user.id
     ).all()
@@ -765,7 +767,7 @@ async def get_deck(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить конкретную колоду по ID"""
+    # Получить конкретную колоду по ID
     deck = db.query(models.Deck).filter(
         models.Deck.id == deck_id,
         models.Deck.user_id == current_user.id
@@ -786,7 +788,7 @@ async def update_deck(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Обновить колоду"""
+    # Обновить колоду
     db_deck = db.query(models.Deck).filter(
         models.Deck.id == deck_id,
         models.Deck.user_id == current_user.id
@@ -811,7 +813,7 @@ async def delete_deck(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Удалить колоду"""
+    # Удалить колоду
     db_deck = db.query(models.Deck).filter(
         models.Deck.id == deck_id,
         models.Deck.user_id == current_user.id
@@ -836,7 +838,7 @@ async def create_word(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Добавить слово в колоду"""
+    # Добавить слово в колоду
     deck = db.query(models.Deck).filter(
         models.Deck.id == word.deck_id,
         models.Deck.user_id == current_user.id
@@ -866,7 +868,7 @@ async def get_word(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить конкретное слово по ID"""
+    # Получить конкретное слово по ID
     word = db.query(models.Word).join(models.Deck).filter(
         models.Word.id == word_id,
         models.Deck.user_id == current_user.id
@@ -888,7 +890,7 @@ async def update_word(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Обновить слово"""
+    # Обновить слово
     db_word = db.query(models.Word).join(models.Deck).filter(
         models.Word.id == word_id,
         models.Deck.user_id == current_user.id
@@ -927,7 +929,7 @@ async def delete_word(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Удалить слово"""
+    # Удалить слово
     db_word = db.query(models.Word).join(models.Deck).filter(
         models.Word.id == word_id,
         models.Deck.user_id == current_user.id
@@ -950,7 +952,7 @@ async def get_deck_words(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить все слова в конкретной колоде"""
+    # Получить все слова в конкретной колоде
     deck = db.query(models.Deck).filter(
         models.Deck.id == deck_id,
         models.Deck.user_id == current_user.id
@@ -976,7 +978,7 @@ async def get_next_word(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Получить следующее слово для повторения"""
+    # Получить следующее слово для повторения
     user_decks = db.query(models.Deck).filter(
         models.Deck.user_id == current_user.id
     ).all()
@@ -1010,7 +1012,7 @@ async def submit_study_result(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Отметить результат изучения слова"""
+    # Отметить результат изучения слова
     today = datetime.utcnow()
 
     word = db.query(models.Word).join(models.Deck).filter(
@@ -1090,7 +1092,7 @@ async def get_detailed_stats(
         db: Session = Depends(database.get_db),
         current_user: models.User = Depends(auth.get_current_user)
 ):
-    """Статистика для страницы 'Прогресс'"""
+    # Статистика для страницы 'Прогресс'
     from sqlalchemy import func
 
     deck_ids = [d.id for d in db.query(models.Deck).filter(
