@@ -70,23 +70,6 @@ class WordResponse(BaseModel):
 
 
 
-
-
-
-# === Для статистики ===
-class UserStats(BaseModel):
-    total_words: int  # Всего слов у пользователя
-    words_learned: int  # Выученные слова (repetitions > 3)
-    words_to_review: int  # Слова, готовые к повторению сегодня
-    words_new: int  # Новые слова (ещё не изучались)
-    average_ease_factor: float  # Средняя лёгкость слов
-    total_decks: int  # Всего колод
-    study_streak: int  # Дней подряд (упрощённо)
-
-    class Config:
-        from_attributes = True
-
-
 class StudyStats(BaseModel):
     due_now: int
     mastered: int
