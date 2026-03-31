@@ -49,11 +49,22 @@ def verify_password(plain_password: str, hashed_password: str) -> bool: #Фун�
     return pwd_context.verify(plain_password, hashed_password)
 
 
-
 def get_password_hash(password):
-    # bcrypt имеет ограничение 72 байта, обрезаем пароль если нужно
-    if isinstance(password, str) and len(password) > 72:
+    # 1. Если пароль — не строка (например, объект от фронтенда), пытаемся исправить
+    if not isinstance(password, str):
+        # Если это объект с полем 'target' или 'value', берем его
+        if hasattr(password, 'target'):
+            password = str(password.target.value)
+        elif hasattr(password, 'value'):
+            password = str(password.value)
+        else:
+            password = str(password)  # На всякий случай просто превращаем в строку
+
+    # 2. Обрезаем пароль до 72 символов, если он слишком длинный (требование bcrypt)
+    if len(password) > 72:
         password = password[:72]
+
+    # 3. Хэшируем
     return pwd_context.hash(password)
 #------------------------------------------------------------------------------------------------------------------------
 
