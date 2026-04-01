@@ -22,7 +22,7 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
-# === Для колод ===
+#      Для колод
 class DeckCreate(BaseModel):
     title: str
     description: Optional[str] = None
@@ -38,14 +38,14 @@ class DeckResponse(BaseModel):
         from_attributes = True
 
 
-# === Для слов ===
+#       Для слов
 class WordCreate(BaseModel):
     term: str
     definition: str
     example: Optional[str] = None
     deck_id: int
 
-    # Поля SRS опциональны при создании (установятся дефолтные значения)
+    #Поля SRS опциональны при создании (установятся дефолтные значения)
     next_review: Optional[datetime] = None
     interval: Optional[int] = 0
     ease_factor: Optional[int] = 2500
@@ -59,7 +59,7 @@ class WordResponse(BaseModel):
     example: Optional[str]
     deck_id: int
 
-    # Поля SRS для ответа
+    #Поля SRS для ответа
     next_review: datetime
     interval: int
     ease_factor: int

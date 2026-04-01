@@ -15,7 +15,7 @@ class User(Base): # Объявляет класс User и имя таблицы 
                                                        # индекс - ускоряет поиск по этому полю
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
-    password_hash = Column(String) # у разных пользователей могут быть одинаковые пароли (хэши будут разными из-за «соли»).
+    password_hash = Column(String) # у разных пользователей могут быть одинаковые пароли (хэши будут разными из-за соли).
 
 
     current_streak = Column(Integer, default=0)  # Текущая серия
@@ -52,11 +52,11 @@ class Word(Base):
     example = Column(Text, nullable=True)  # Пример использования
     deck_id = Column(Integer, ForeignKey("decks.id"))
 
-    # Поля для SRS (интервального повторения)
+    #Поля для SRS (интервального повторения)
     next_review = Column(DateTime, default=datetime.utcnow)
     interval = Column(Integer, default=0)  # Интервал в днях
     ease_factor = Column(Integer, default=2500)  # Коэффициент лёгкости
     repetitions = Column(Integer, default=0)  # Количество повторений
 
-    # Связь
+    #Связь
     deck = relationship("Deck", back_populates="words")

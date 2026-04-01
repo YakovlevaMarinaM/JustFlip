@@ -1,5 +1,4 @@
-
-# main.py
+#main.py
 
 from sqlalchemy.orm import Session #Сеанс связи с БД (через него все: add(), commit(), query(), delete())
 from datetime import datetime, timedelta, date
@@ -28,17 +27,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://localhost:5174",  # ← Добавь эту строку!
+        "http://localhost:5174",
         "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",  # ← И эту тоже!
+        "http://127.0.0.1:5174",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-
 
 
 
@@ -620,6 +616,8 @@ async def get_detailed_stats(
         longest_streak=current_user.longest_streak,
         current_streak=current_user.current_streak
     )
+
+#ПОЧЕМУ ОНО НЕ РАБОТАЕТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТ
 
 # python -m uvicorn main:app  <-- это в первый терминал (зелененький сайт, документация)
 # uvicorn main:app --reload

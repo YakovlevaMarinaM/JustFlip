@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session #Сеанс связи с БД (через н
 import models, database
 
 # === Настройки ===
-SECRET_KEY = "your-secret-key-change-this-in-production"  # Секретный ключ для подписи JWT-токенов.
+SECRET_KEY = "there_might_have_been_your_ad"  # Секретный ключ для подписи JWT-токенов.
 ALGORITHM = "HS256" #Алгоритм шифрования JWT.
 ACCESS_TOKEN_EXPIRE_MINUTES = 30 #Время жизни токена в минутах
 
@@ -39,7 +39,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 #Создаёт схему получения токена.
 # Указывает FastAPI, что токен нужно брать из заголовка Authorization.
 # tokenUrl="api/login" — связывает схему с эндпоинтом логина.
-# Благодаря этому в документации /docs появляется кнопка Authorize 🔒.
+# Благодаря этому в документации /docs появляется кнопка Authorize
 
 
 
