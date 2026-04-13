@@ -15,15 +15,6 @@ function Dashboard() {
       <button onClick={handleLogout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
         Выйти
       </button>
-
-      <h3 style={{ marginTop: '30px' }}>Доступные эндпоинты:</h3>
-      <ul style={{ textAlign: 'left', display: 'inline-block' }}>
-        <li>GET /api/users/me - данные пользователя</li>
-        <li>GET /api/decks - ваши колоды</li>
-        <li>POST /api/decks - создать колоду</li>
-        <li>GET /api/study/next - следующее слово</li>
-      </ul>
-
       <p style={{ marginTop: '20px' }}>
         <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer">
           Открыть Swagger документацию →
@@ -33,7 +24,6 @@ function Dashboard() {
   )
 }
 
-// Защищённый маршрут
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token')
   if (!token) {
@@ -56,7 +46,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* Перенаправление с главной на логин */}
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>

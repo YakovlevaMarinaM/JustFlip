@@ -17,7 +17,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import models, database, schemas, auth # Импортирует локальные модули.
 from datetime import datetime, timedelta, date
-
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from sqlalchemy import cast
 #from sqlite3 import Date
 
@@ -627,6 +628,58 @@ async def get_detailed_stats(
         current_streak=current_user.current_streak
     )
 
+
+
+# Добавьте ваш Google Client ID сюда (лучше вынести в .env, но пока так)
+GOOGLE_CLIENT_ID = "1089661556109-23mb88jsobm9572sl7spgiirt3lbu1gr.apps.googleusercontent.com"
+
+
+@app.post("/api/auth/google")
+async def google_login(token_request: dict, db: Session = Depends(database.get_db)):
+    id_token_str = token_request.get("id_token")
+
+    if not id_token_str:
+        raise HTTPException(status_code=400, detail="No ID token provided")
+
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            id_token_str,
+            google_requests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+        google_email = idinfo.get("email")
+        google_username = google_email.split("@")[0]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid Google token")
+
+    user = db.query(models.User).filter(models.User.email == google_email).first()
+    if not user:
+        random_password = secrets.token_urlsafe(16)
+        hashed_password = auth.get_password_hash(random_password)
+        existing_username = db.query(models.User).filter(models.User.username == google_username).first()
+        final_username = google_username
+        if existing_username:
+            final_username = f"{google_username}_{secrets.token_hex(4)}"
+        new_user = models.User(
+            username=final_username,
+            email=google_email,
+            password_hash=hashed_password
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        user = new_user
+
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.username},
+        expires_delta=access_token_expires
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": schemas.UserResponse.model_validate(user)
+    }
 #ПОЧЕМУ ОНО НЕ РАБОТАЕТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТ
 
 # python -m uvicorn main:app  <-- это в первый терминал (зелененький сайт, документация)
