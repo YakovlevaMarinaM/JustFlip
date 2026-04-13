@@ -13,6 +13,8 @@ from fastapi import FastAPI, Depends, HTTPException, status #FastAPI — кла�
 from fastapi.security import OAuth2PasswordRequestForm #Это стандартная форма OAuth2 с полями username и password.
                                                        # FastAPI сам создаст UI для ввода в документации /docs.
                                # Зачем: Чтобы указать, сколько времени будет действовать токен (например, 30 минут).
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import models, database, schemas, auth # Импортирует локальные модули.
 from datetime import datetime, timedelta, date
 
@@ -36,7 +38,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/register")
+async def register_page():
+    return FileResponse("static/register.html")
+
+@app.get("/")
+async def root_page():
+    return FileResponse("static/register.html")
 
 
 
