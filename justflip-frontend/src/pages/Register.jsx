@@ -1,28 +1,44 @@
 import { useState } from 'react'
-import { authAPI } from '../services/api'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 function Register() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    setLoading(true)
+
     try {
-      await authAPI.register(username, email, password)
+      // Прямой fetch к вашему бэкенду
+      const response = await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password }),
+      })
+
+      if (!response.ok) {
+        const errData = await response.json()
+        throw new Error(errData.detail || 'Ошибка регистрации')
+      }
+
       alert('Регистрация успешна! Теперь войдите.')
       navigate('/login')
     } catch (err) {
-      setError('Ошибка регистрации. Возможно, пользователь уже существует.')
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h1>JustFlip - Регистрация</h1>
+      <h2>JustFlip - Регистрация</h2>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '10px' }}>
           <input
@@ -30,7 +46,7 @@ function Register() {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ width: '100%', padding: '10px' }}
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
             required
           />
         </div>
@@ -40,7 +56,7 @@ function Register() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '10px' }}
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
             required
           />
         </div>
@@ -50,16 +66,25 @@ function Register() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '10px' }}
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}
             required
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit" style={{ width: '100%', padding: '10px' }}>
-          Зарегистрироваться
+
+        {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ width: '100%', padding: '10px', cursor: loading ? 'not-allowed' : 'pointer' }}
+        >
+          {loading ? 'Регистрация...' : 'Зарегистрироваться'}
         </button>
       </form>
-      <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+
+      <p style={{ marginTop: '15px' }}>
+        Уже есть аккаунт? <Link to="/login" style={{ color: 'var(--accent)' }}>Войти</Link>
+      </p>
     </div>
   )
 }
