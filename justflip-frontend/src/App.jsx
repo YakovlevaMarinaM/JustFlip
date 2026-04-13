@@ -15,11 +15,6 @@ function Dashboard() {
       <button onClick={handleLogout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
         Выйти
       </button>
-      <p style={{ marginTop: '20px' }}>
-        <a href="http://127.0.0.1:8000/docs" target="_blank" rel="noopener noreferrer">
-          Открыть Swagger документацию →
-        </a>
-      </p>
     </div>
   )
 }

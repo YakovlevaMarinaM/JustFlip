@@ -1,8 +1,7 @@
-// justflip-frontend/src/pages/Login.jsx
 import { useState } from 'react'
 import { authAPI } from '../services/api'
 import { useNavigate, Link } from 'react-router-dom'
-import { useGoogleLogin } from '@react-oauth/google' // ← Импортируем хук Google
+import { useGoogleLogin } from '@react-oauth/google'
 
 function Login() {
   const [username, setUsername] = useState('')
@@ -10,7 +9,6 @@ function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  // Обычный вход
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -23,14 +21,16 @@ function Login() {
     }
   }
 
-  // === Вход через Google ===
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        // Отправляем токен на бэкенд
         const res = await fetch('http://localhost:8000/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id_token: tokenResponse.access_token })
+          // Примечание: @react-oauth/google возвращает access_token в onSuccess.
+          // Наш обновленный бэкенд попытается его проверить.
         })
 
         if (res.ok) {
@@ -57,7 +57,6 @@ function Login() {
       <h2>JustFlip - Вход</h2>
 
       <form onSubmit={handleSubmit}>
-        {/* Username */}
         <div style={{ marginBottom: '10px' }}>
           <input
             type="text"
@@ -68,8 +67,6 @@ function Login() {
             required
           />
         </div>
-
-        {/* Password */}
         <div style={{ marginBottom: '10px' }}>
           <input
             type="password"
@@ -81,7 +78,6 @@ function Login() {
           />
         </div>
 
-        {/* Ошибка — исправлено: закрыт тег </p> */}
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
         <button type="submit" style={{ width: '100%', padding: '10px', marginBottom: '10px' }}>
@@ -89,14 +85,12 @@ function Login() {
         </button>
       </form>
 
-      {/* Разделитель "или" */}
       <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
         <div style={{ flex: 1, height: '1px', background: '#e5e4e7' }}></div>
         <span style={{ padding: '0 10px', color: '#9ca3af', fontSize: '14px' }}>или</span>
         <div style={{ flex: 1, height: '1px', background: '#e5e4e7' }}></div>
       </div>
 
-      {/* Кнопка Google */}
       <button
         onClick={() => googleLogin()}
         style={{
@@ -123,7 +117,6 @@ function Login() {
         Войти через Google
       </button>
 
-      {/* Ссылка на регистрацию — исправлено: Markdown заменён на Link */}
       <p style={{ marginTop: '15px', fontSize: '14px' }}>
         Нет аккаунта? <Link to="/register" style={{ color: '#aa3bff', textDecoration: 'none' }}>Зарегистрироваться</Link>
       </p>
