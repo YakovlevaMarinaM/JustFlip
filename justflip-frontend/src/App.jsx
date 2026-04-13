@@ -22,7 +22,7 @@ function Dashboard() {
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token')
   if (!token) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" />
   }
   return children
 }
@@ -41,7 +41,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   )

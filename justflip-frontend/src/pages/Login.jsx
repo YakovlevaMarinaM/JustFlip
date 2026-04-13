@@ -7,30 +7,44 @@ function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Обычный вход
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    setIsLoading(true)
+
     try {
       const response = await authAPI.login(username, password)
       localStorage.setItem('token', response.data.access_token)
       alert('Вход успешен!')
       navigate('/dashboard')
     } catch (err) {
+      console.error(err)
       setError('Неверный логин или пароль')
+    } finally {
+      setIsLoading(false)
     }
   }
 
+  // Вход через Google
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      setIsLoading(true)
+      setError('')
       try {
-        // Отправляем токен на бэкенд
+        console.log('Google token response:', tokenResponse)
+
+        // Отправляем access_token на бэкенд
         const res = await fetch('http://localhost:8000/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_token: tokenResponse.access_token })
-          // Примечание: @react-oauth/google возвращает access_token в onSuccess.
-          // Наш обновленный бэкенд попытается его проверить.
+          body: JSON.stringify({
+            access_token: tokenResponse.access_token,
+            token_type: 'access_token'
+          })
         })
 
         if (res.ok) {
@@ -45,68 +59,100 @@ function Login() {
       } catch (err) {
         console.error(err)
         setError('Ошибка сети при входе через Google')
+      } finally {
+        setIsLoading(false)
       }
     },
     onError: () => {
       setError('Ошибка входа через Google')
-    }
+      setIsLoading(false)
+    },
+    flow: 'implicit',
+    scope: 'openid email profile'
   })
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h2>JustFlip - Вход</h2>
+    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>JustFlip - Вход</h2>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
+        <div style={{ marginBottom: '15px' }}>
           <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ width: '100%', padding: '10px' }}
+            style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
             required
+            disabled={isLoading}
           />
         </div>
-        <div style={{ marginBottom: '10px' }}>
+
+        <div style={{ marginBottom: '15px' }}>
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '10px' }}
+            style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', boxSizing: 'border-box' }}
             required
+            disabled={isLoading}
           />
         </div>
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && (
+          <div style={{ background: '#fee', color: '#c00', padding: '10px', borderRadius: '4px', marginBottom: '15px', fontSize: '14px' }}>
+            {error}
+          </div>
+        )}
 
-        <button type="submit" style={{ width: '100%', padding: '10px', marginBottom: '10px' }}>
-          Войти
+        <button
+          type="submit"
+          style={{
+            width: '100%',
+            padding: '12px',
+            background: '#aa3bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold'
+          }}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Загрузка...' : 'Войти'}
         </button>
       </form>
 
-      <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', margin: '25px 0' }}>
         <div style={{ flex: 1, height: '1px', background: '#e5e4e7' }}></div>
         <span style={{ padding: '0 10px', color: '#9ca3af', fontSize: '14px' }}>или</span>
         <div style={{ flex: 1, height: '1px', background: '#e5e4e7' }}></div>
       </div>
 
+      {/* Кнопка Google */}
       <button
         onClick={() => googleLogin()}
+        disabled={isLoading}
         style={{
           width: '100%',
-          padding: '10px',
+          padding: '12px',
           background: '#fff',
-          border: '1px solid #e5e4e7',
+          border: '1px solid #ddd',
           borderRadius: '4px',
-          cursor: 'pointer',
+          cursor: isLoading ? 'not-allowed' : 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px',
+          gap: '10px',
           marginBottom: '15px',
-          fontSize: '14px'
+          fontSize: '14px',
+          color: '#555',
+          transition: 'background 0.2s'
         }}
+        onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+        onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
       >
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -117,8 +163,11 @@ function Login() {
         Войти через Google
       </button>
 
-      <p style={{ marginTop: '15px', fontSize: '14px' }}>
-        Нет аккаунта? <Link to="/register" style={{ color: '#aa3bff', textDecoration: 'none' }}>Зарегистрироваться</Link>
+      <p style={{ marginTop: '15px', fontSize: '14px', textAlign: 'center' }}>
+        Нет аккаунта?{' '}
+        <Link to="/register" style={{ color: '#aa3bff', textDecoration: 'none', fontWeight: 'bold' }}>
+          Зарегистрироваться
+        </Link>
       </p>
     </div>
   )

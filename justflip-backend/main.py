@@ -27,6 +27,7 @@ from google.auth.transport import requests as google_requests
 #from sqlite3 import Date
 
 from fastapi.middleware.cors import CORSMiddleware
+GOOGLE_CLIENT_ID = "1089661556109-23mb88jsobm9572sl7spgiirt3lbu1gr.apps.googleusercontent.com"
 app = FastAPI(title="JustFlip API", description="Веб-приложение для изучения иностранных слов JustFlip!")
 #Создаёт экземпляр приложения FastAP. Это точка входа всего сервера. Все маршруты регистрируются через этот объект
 #Добавляем CORS middleware
@@ -64,6 +65,20 @@ async def root():
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
+@app.post("/api/login")
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
+    user = auth.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = auth.create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/api/register", response_model=schemas.UserResponse)
 # response_model — схема ответа. FastAPI проверит, что возвращаемые данные соответствуют UserResponse
@@ -106,41 +121,90 @@ async def register(user: schemas.UserCreate, db: Session = Depends(database.get_
     return new_user
 
 
-
 @app.post("/api/auth/google")
 async def google_login(token_request: dict, db: Session = Depends(database.get_db)):
+    import requests as http_requests
+
     # Принимаем либо id_token, либо access_token
     token_str = token_request.get("id_token") or token_request.get("access_token")
-
     if not token_str:
         raise HTTPException(status_code=400, detail="No token provided")
 
-    try:
-        idinfo = id_token.verify_oauth2_token(
-            token_str,
-            google_requests.Request(),
-            GOOGLE_CLIENT_ID
-        )
-        google_email = idinfo.get("email")
-        if not google_email:
-            raise HTTPException(status_code=400, detail="Email not found in Google account")
-        google_username = google_email.split("@")[0]
-    except ValueError as e:
-        print(f"Google Token Error: {e}")  # ← логирование для отладки
-        raise HTTPException(status_code=400, detail=f"Invalid Google token: {str(e)}")
+    # Проверяем тип токена по префиксу
+    if token_str.startswith('ya29.'):  # Google access token начинается с ya29.
+        # === ПРОВЕРКА ACCESS TOKEN через Google API ===
+        try:
+            # Шаг 1: Проверяем валидность access token
+            token_info_response = http_requests.get(
+                f'https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={token_str}'
+            )
 
+            if token_info_response.status_code != 200:
+                print(f"Token info error: {token_info_response.text}")
+                raise HTTPException(status_code=400, detail="Invalid Google access token")
+
+            token_info = token_info_response.json()
+
+            # Проверяем, что токен выдан для нашего приложения
+            if token_info.get('aud') != GOOGLE_CLIENT_ID:
+                raise HTTPException(status_code=400, detail="Token audience mismatch")
+
+            # Шаг 2: Получаем информацию о пользователе
+            user_info_response = http_requests.get(
+                'https://www.googleapis.com/oauth2/v2/userinfo',
+                headers={'Authorization': f'Bearer {token_str}'}
+            )
+
+            if user_info_response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Failed to get user info from Google")
+
+            user_info = user_info_response.json()
+            google_email = user_info.get('email')
+
+            if not google_email:
+                raise HTTPException(status_code=400, detail="Email not found in Google account")
+
+            google_username = google_email.split('@')[0]
+
+        except Exception as e:
+            print(f"Access Token Error: {e}")
+            raise HTTPException(status_code=400, detail=f"Invalid access token: {str(e)}")
+
+    else:
+        # === ПРОВЕРКА ID TOKEN (стандартный JWT) ===
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                token_str,
+                google_requests.Request(),
+                GOOGLE_CLIENT_ID
+            )
+            google_email = idinfo.get("email")
+            if not google_email:
+                raise HTTPException(status_code=400, detail="Email not found in Google account")
+            google_username = google_email.split("@")[0]
+        except ValueError as e:
+            print(f"ID Token Error: {e}")
+            raise HTTPException(status_code=400, detail=f"Invalid ID token: {str(e)}")
+
+    # === СОЗДАНИЕ/ПОИСК ПОЛЬЗОВАТЕЛЯ ===
     user = db.query(models.User).filter(models.User.email == google_email).first()
 
     if not user:
         random_password = secrets.token_urlsafe(16)
         hashed_password = auth.get_password_hash(random_password)
-        existing_username = db.query(models.User).filter(models.User.username == google_username).first()
+
+        existing_username = db.query(models.User).filter(
+            models.User.username == google_username
+        ).first()
         final_username = google_username
         counter = 1
-        while existing_username:  # ← защита от дубликатов
+        while existing_username:
             final_username = f"{google_username}{counter}"
-            existing_username = db.query(models.User).filter(models.User.username == final_username).first()
+            existing_username = db.query(models.User).filter(
+                models.User.username == final_username
+            ).first()
             counter += 1
+
         new_user = models.User(
             username=final_username,
             email=google_email,
@@ -157,7 +221,6 @@ async def google_login(token_request: dict, db: Session = Depends(database.get_d
         expires_delta=access_token_expires
     )
 
-    # Поддержка Pydantic v1/v2
     try:
         user_response = schemas.UserResponse.model_validate(user)
     except AttributeError:
@@ -168,7 +231,6 @@ async def google_login(token_request: dict, db: Session = Depends(database.get_d
         "token_type": "bearer",
         "user": user_response
     }
-
 
 @app.get("/api/users/me", response_model=schemas.UserResponse) #Защищённый эндпоинт для получения данных о себе.
 async def get_current_user(
@@ -669,52 +731,7 @@ async def get_detailed_stats(
 GOOGLE_CLIENT_ID = "1089661556109-23mb88jsobm9572sl7spgiirt3lbu1gr.apps.googleusercontent.com"
 
 
-@app.post("/api/auth/google")
-async def google_login(token_request: dict, db: Session = Depends(database.get_db)):
-    id_token_str = token_request.get("id_token")
 
-    if not id_token_str:
-        raise HTTPException(status_code=400, detail="No ID token provided")
-
-    try:
-        idinfo = id_token.verify_oauth2_token(
-            id_token_str,
-            google_requests.Request(),
-            GOOGLE_CLIENT_ID
-        )
-        google_email = idinfo.get("email")
-        google_username = google_email.split("@")[0]
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid Google token")
-
-    user = db.query(models.User).filter(models.User.email == google_email).first()
-    if not user:
-        random_password = secrets.token_urlsafe(16)
-        hashed_password = auth.get_password_hash(random_password)
-        existing_username = db.query(models.User).filter(models.User.username == google_username).first()
-        final_username = google_username
-        if existing_username:
-            final_username = f"{google_username}_{secrets.token_hex(4)}"
-        new_user = models.User(
-            username=final_username,
-            email=google_email,
-            password_hash=hashed_password
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        user = new_user
-
-    access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = auth.create_access_token(
-        data={"sub": user.username},
-        expires_delta=access_token_expires
-    )
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": schemas.UserResponse.model_validate(user)
-    }
 #ПОЧЕМУ ОНО НЕ РАБОТАЕТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТТ
 
 # python -m uvicorn main:app  <-- это в первый терминал (зелененький сайт, документация)
