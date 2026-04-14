@@ -1,3 +1,4 @@
+import './Register.css'
 import { useState } from 'react'
 import { authAPI } from '../services/api'
 import { useNavigate, Link } from 'react-router-dom'
