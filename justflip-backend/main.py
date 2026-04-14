@@ -1,4 +1,8 @@
 #main.py
+from dotenv import load_dotenv
+load_dotenv()  #Загружает переменные из .env
+
+
 
 from sqlalchemy.orm import Session #Сеанс связи с БД (через него все: add(), commit(), query(), delete())
 from datetime import datetime, timedelta, date

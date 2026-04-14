@@ -1,27 +1,22 @@
 # FastAPI и сервер
-fastapi==0.109.2
-uvicorn[standard]==0.27.1
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
 
-# База данных
+# Pydantic v2
+pydantic>=2.9.0
+pydantic-settings>=2.6.0
+
+# Google Auth
+google-auth>=2.35.0
+google-auth-oauthlib>=1.2.0
+google-auth-httplib2>=0.2.0
+requests>=2.32.0
+
+# Остальное (можно оставить как есть)
 sqlalchemy>=2.0.35
-# psycopg2-binary==2.9.9  # Раскомментируйте, если будете деплоить на PostgreSQL
-
-# Валидация данных (ВАЖНО: Версия 2 для совместимости с вашим кодом)
-pydantic==2.5.3
-pydantic-settings==2.1.0
-email-validator==2.1.0
-
-# Безопасность и токены
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
-
-# Google OAuth (ОБЯЗАТЕЛЬНО ДОБАВИТЬ)
-google-auth==2.26.2
-google-auth-oauthlib==1.2.0
-google-auth-httplib2==0.2.0
-requests==2.31.0  # Для проверки access_token
-python-dotenv==1.0.1
-
-# Утилиты
-typing-extensions>=4.9.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+email-validator>=2.2.0
+python-dotenv>=1.0.1
+typing-extensions>=4.12.0
