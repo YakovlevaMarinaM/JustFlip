@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JustFlip — Вход</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --plum:#5C3D47;--plum2:#7A5260;
+      --rose:#C9967E;--rose2:#E8BBA8;
+      --butter:#FDF6E3;--butter2:#F5EDD0;
+      --red:#C4736A;--text:#3D2A30;--muted:#9E8088;--border:#E8D8CC;
+    }
+    html,body{min-height:100vh;font-family:'Montserrat',sans-serif}
+    body{background:linear-gradient(140deg,#ECC8C8 0%,#F5DFC0 55%,#EAC6C6 100%);display:flex;align-items:center;justify-content:center;padding:2rem 1rem;overflow-x:hidden;position:relative}
+    .bg-cards{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    .bg-card{position:absolute;border-radius:14px;border:1px solid rgba(92,61,71,0.18);background:rgba(253,246,227,0.35);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;color:rgba(92,61,71,0.35);font-size:12px;letter-spacing:0.06em;font-weight:600;animation:floatCard linear infinite}
+    .bg-card:nth-child(1){width:118px;height:78px;top:8%;left:6%;animation-duration:18s;animation-delay:0s}
+    .bg-card:nth-child(2){width:88px;height:60px;top:20%;left:80%;animation-duration:22s;animation-delay:-4s}
+    .bg-card:nth-child(3){width:138px;height:88px;top:55%;left:3%;animation-duration:26s;animation-delay:-8s}
+    .bg-card:nth-child(4){width:78px;height:54px;top:70%;left:88%;animation-duration:20s;animation-delay:-2s}
+    .bg-card:nth-child(5){width:108px;height:74px;top:85%;left:45%;animation-duration:24s;animation-delay:-6s}
+    .bg-card:nth-child(6){width:94px;height:64px;top:35%;left:92%;animation-duration:28s;animation-delay:-10s}
+    @keyframes floatCard{0%{transform:translateY(0) rotate(-3deg);opacity:.7}33%{transform:translateY(-16px) rotate(2deg);opacity:1}66%{transform:translateY(-7px) rotate(-1deg);opacity:.8}100%{transform:translateY(0) rotate(-3deg);opacity:.7}}
+    .card-wrap{position:relative;z-index:1;width:100%;max-width:440px;animation:slideUp .7s cubic-bezier(.16,1,.3,1) both}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:var(--butter);border-radius:28px;padding:48px 44px 44px;box-shadow:0 0 0 1px rgba(92,61,71,0.08),0 40px 80px rgba(92,61,71,0.18)}
+    .logo{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+    .logo-mark{width:38px;height:38px;background:var(--plum);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .logo-mark svg{width:20px;height:20px}
+    .logo-text{font-weight:800;font-size:20px;color:var(--plum);letter-spacing:-.02em}
+    .heading{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.03em;margin-bottom:6px;line-height:1.15}
+    .subheading{font-size:13px;color:var(--muted);font-weight:400;margin-bottom:30px}
+    .form-group{margin-bottom:18px}
+    label{display:block;font-size:11px;font-weight:700;color:var(--text);margin-bottom:7px;letter-spacing:.05em;text-transform:uppercase}
+    .input-wrap{position:relative}
+    input[type="text"],input[type="password"]{width:100%;padding:13px 16px 13px 44px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:500;color:var(--text);background:var(--butter2);border:1.5px solid var(--border);border-radius:12px;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none}
+    input::placeholder{color:var(--muted);font-weight:400}
+    input:focus{border-color:var(--rose);background:#fff;box-shadow:0 0 0 3px rgba(201,150,126,0.18)}
+    input.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,115,106,0.15)}
+    .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--rose);pointer-events:none}
+    .toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;cursor:pointer;color:var(--muted);background:none;border:none;padding:0;display:flex;align-items:center}
+    .toggle-pw:hover{color:var(--plum)}
+    .field-error{font-size:11.5px;color:var(--red);margin-top:5px;display:none;font-weight:500}
+    .field-error.visible{display:block}
+    .label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+    .label-row label{margin-bottom:0}
+    .forgot-link{font-size:11px;font-weight:600;color:var(--rose);text-decoration:none;letter-spacing:.02em}
+    .forgot-link:hover{color:var(--plum)}
+    .btn-submit{width:100%;padding:15px;margin-top:8px;background:var(--plum);color:#fff;border:none;border-radius:12px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .1s,box-shadow .2s}
+    .btn-submit:hover{background:var(--plum2);box-shadow:0 8px 24px rgba(92,61,71,0.28)}
+    .btn-submit:active{transform:scale(.99)}
+    .btn-submit .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .btn-submit.loading .btn-text{display:none}
+    .btn-submit.loading .spinner{display:block}
+    .global-error{background:rgba(196,115,106,0.1);border:1px solid rgba(196,115,106,0.3);border-radius:10px;padding:10px 14px;font-size:12.5px;color:var(--red);font-weight:500;margin-bottom:18px;display:none}
+    .global-error.visible{display:block}
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .divider span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+    .btn-google{width:100%;padding:13px;background:#fff;border:1.5px solid var(--border);border-radius:12px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .2s,box-shadow .2s}
+    .btn-google:hover{border-color:var(--rose);box-shadow:0 2px 8px rgba(92,61,71,0.08)}
+    .card-footer{text-align:center;margin-top:22px;font-size:13px;color:var(--muted)}
+    .card-footer a{color:var(--plum);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--rose);padding-bottom:1px;transition:color .2s}
+    .card-footer a:hover{color:var(--rose)}
+    @media(max-width:520px){.card{padding:36px 22px 32px}.heading{font-size:22px}}
+  </style>
+</head>
+<body>
+  <div class="bg-cards">
+    <div class="bg-card">apple</div>
+    <div class="bg-card">учиться</div>
+    <div class="bg-card">column</div>
+    <div class="bg-card">flip</div>
+    <div class="bg-card">palabra</div>
+    <div class="bg-card">память</div>
+  </div>
+
+  <div class="card-wrap">
+    <div class="card">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5" width="18" height="12" rx="2.5" stroke="#E8BBA8" stroke-width="1.8"/>
+            <path d="M8 12h8M12 8v8" stroke="#E8BBA8" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">JustFlip</span>
+      </div>
+
+      <h1 class="heading">С возвращением</h1>
+      <p class="subheading">Продолжи учить слова с того места, где остановился</p>
+
+      <div class="global-error" id="global-error">Неверное имя пользователя или пароль</div>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="username">Имя пользователя</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            <input type="text" id="username" name="username" placeholder="username123" autocomplete="username" />
+          </div>
+          <p class="field-error" id="err-username">Введите имя пользователя</p>
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password">Пароль</label>
+            <a href="#" class="forgot-link">Забыл пароль?</a>
+          </div>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/>
+            </svg>
+            <input type="password" id="password" name="password" placeholder="Ваш пароль" autocomplete="current-password" />
+            <button type="button" class="toggle-pw" onclick="togglePw()" tabindex="-1">
+              <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="18" height="18">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <p class="field-error" id="err-password">Введите пароль</p>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <span class="btn-text">Войти</span>
+          <div class="spinner"></div>
+        </button>
+      </form>
+
+      <div class="divider"><span>или</span></div>
+
+      <button class="btn-google" onclick="alert('Google OAuth пока в разработке')">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Войти через Google
+      </button>
+
+      <p class="card-footer">Нет аккаунта? <a href="/register.html">Зарегистрироваться</a></p>
+    </div>
+  </div>
+
+  <script>
+    function togglePw() {
+      var i = document.getElementById('password'), h = i.type === 'password';
+      i.type = h ? 'text' : 'password';
+      document.getElementById('eye-icon').innerHTML = h
+        ? "<line x1='1' y1='1' x2='23' y2='23'/><path d='M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 7 11 7a13.16 13.16 0 0 1-1.67 2.68'/><path d='M6.61 6.61A13.526 13.526 0 0 0 1 12s4 7 11 7a9.74 9.74 0 0 0 5.39-1.61'/><circle cx='12' cy='12' r='3'/>"
+        : "<path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/>";
+    }
+    function showErr(id, msg) {
+      var el = document.getElementById('err-' + id), inp = document.getElementById(id);
+      if (msg) { el.textContent = msg; el.classList.add('visible'); inp.classList.add('error'); }
+      else { el.classList.remove('visible'); inp.classList.remove('error'); }
+    }
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var username = document.getElementById('username').value.trim();
+      var password = document.getElementById('password').value;
+      var valid = true;
+      document.getElementById('global-error').classList.remove('visible');
+      if (!username) { showErr('username', 'Введите имя пользователя'); valid = false; }
+      else showErr('username', '');
+      if (!password) { showErr('password', 'Введите пароль'); valid = false; }
+      else showErr('password', '');
+      if (!valid) return;
+      var btn = document.getElementById('submit-btn');
+      btn.classList.add('loading');
+      try {
+        var form = new URLSearchParams();
+        form.append('username', username);
+        form.append('password', password);
+        var res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: form });
+        if (res.ok) {
+          var data = await res.json();
+          localStorage.setItem('token', data.access_token);
+          window.location.href = '/index.html';
+        } else {
+          document.getElementById('global-error').classList.add('visible');
+          btn.classList.remove('loading');
+        }
+      } catch(err) {
+        window.location.href = '/index.html';
+      }
+    });
+  </script>
+</body>
+</html>
