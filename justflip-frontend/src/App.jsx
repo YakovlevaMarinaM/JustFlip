@@ -1,24 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import Deck from './pages/Deck'
+import Study from './pages/Study'
 
-function Dashboard() {
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    window.location.href = '/login'
-  }
-
-  return (
-    <div style={{ maxWidth: '800px', margin: '50px auto', padding: '20px' }}>
-      <h2>Добро пожаловать в JustFlip! 🎉</h2>
-      <p>Бэкенд работает! API подключён.</p>
-      <button onClick={handleLogout} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-        Выйти
-      </button>
-    </div>
-  )
-}
-
+// Защита роутов — если нет токена, перекидывает на login
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token')
   if (!token) {
@@ -31,8 +18,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Публичные страницы */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Защищённые страницы — требуют токена */}
         <Route
           path="/dashboard"
           element={
@@ -41,7 +31,28 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/deck/:id"
+          element={
+            <ProtectedRoute>
+              <Deck />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/study"
+          element={
+            <ProtectedRoute>
+              <Study />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Перенаправление с корня на login */}
         <Route path="/" element={<Navigate to="/login" />} />
+
+        {/* 404 — несуществующая страница */}
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   )
