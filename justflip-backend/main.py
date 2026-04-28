@@ -501,10 +501,11 @@ def create_app() -> FastAPI:
     # === Эндпоинты для обучения (SRS) ===
 
     from datetime import datetime, timedelta
-
+    from sqlalchemy import func
 
     @app.get("/api/study/next", response_model=schemas.WordResponse)
     async def get_next_word(
+            force: bool = False,
             db: Session = Depends(database.get_db),
             current_user: models.User = Depends(auth.get_current_user)
     ):
@@ -522,12 +523,15 @@ def create_app() -> FastAPI:
             )
 
         deck_ids = [deck.id for deck in user_decks]
-
-        # Ищем слова, которые пора повторить (next_review <= сейчас)
-        word = db.query(models.Word).filter(
-            models.Word.deck_id.in_(deck_ids),
-            models.Word.next_review <= datetime.utcnow()
-        ).first()
+        if force:
+            word = db.query(models.Word).filter(
+                models.Word.deck_id.in_(deck_ids)
+            ).order_by(func.random()).first() 
+        else:
+            word = db.query(models.Word).filter(
+                models.Word.deck_id.in_(deck_ids),
+                models.Word.next_review <= datetime.utcnow()
+            ).first()
 
         if not word:
             raise HTTPException(
@@ -536,7 +540,6 @@ def create_app() -> FastAPI:
             )
 
         return word
-
 
     @app.post("/api/study/result")
     async def submit_study_result(
