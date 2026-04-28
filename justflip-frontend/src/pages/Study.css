@@ -1,0 +1,387 @@
+/* ============================================
+   1. СБРОС И БАЗА
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ */
+:root {
+  --bg:       #D0B0B0;
+  --bg2:      #BC8F8F;
+  --pink:     #D4A5A0;
+  --pink-lt:  #E8C8C4;
+  --pink-dk:  #B8887F;
+  --butter:   #F2E4B0;
+  --butter2:  #EDD98A;
+  --cream:    #FAF5EC;
+  --cream2:   #F0E9D8;
+  --text:     #2C1A1D;
+  --muted:    #8A7070;
+  --border:   #E0D0CC;
+  --red:      #C0604C;
+  --green:    #7DAE8A;
+  --yellow:   #EDD98A;
+}
+
+/* ============================================
+   3. СТРАНИЦА
+   ============================================ */
+.study-page {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   4. ФОН
+   ============================================ */
+.bg-cards {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.bg-card {
+  position: absolute;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 165, 160, 0.2);
+  background: rgba(212, 165, 160, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  color: rgba(212, 165, 160, 0.3);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  text-transform: uppercase;
+  animation: floatCard linear infinite;
+}
+
+.bg-card:nth-child(1) { width: 120px; height: 80px; top: 8%; left: 6%; animation-duration: 18s; }
+.bg-card:nth-child(2) { width: 90px; height: 60px; top: 20%; left: 80%; animation-duration: 22s; animation-delay: -4s; }
+.bg-card:nth-child(3) { width: 140px; height: 90px; top: 55%; left: 3%; animation-duration: 26s; animation-delay: -8s; }
+
+@keyframes floatCard {
+  0% { transform: translateY(0px) rotate(-3deg); opacity: 0.6; }
+  33% { transform: translateY(-18px) rotate(2deg); opacity: 1; }
+  66% { transform: translateY(-8px) rotate(-1deg); opacity: 0.8; }
+  100% { transform: translateY(0px) rotate(-3deg); opacity: 0.6; }
+}
+
+.glow {
+  position: fixed;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 165, 160, 0.1) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   5. КОНТЕЙНЕР
+   ============================================ */
+.study-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: none;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   6. HEADER
+   ============================================ */
+.study-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.study-header span {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ============================================
+   7. FLASHCARD
+   ============================================ */
+.flashcard {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  margin-bottom: 2rem;
+}
+
+.card-inner {
+  width: 100%;
+  max-width: 500px;
+  height: 350px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(46, 31, 34, 0.2);
+}
+
+.card-front {
+  background: var(--cream);
+}
+
+.card-back {
+  background: var(--cream);
+  transform: rotateY(180deg);
+}
+
+.card-front h2,
+.card-back h2 {
+  font-size: 2rem;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.card-front .hint {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.card-back .example {
+  font-size: 1rem;
+  color: var(--pink-dk);
+  font-style: italic;
+  margin-top: 1rem;
+  max-width: 80%;
+}
+
+/* ============================================
+   8. RATING BUTTONS
+   ============================================ */
+.rating-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.rating-buttons button {
+  padding: 16px 20px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.rating-buttons button:active {
+  transform: scale(0.97);
+}
+
+.btn-hard {
+  background: var(--red);
+  color: white;
+}
+
+.btn-hard:hover {
+  box-shadow: 0 8px 24px rgba(192, 96, 76, 0.4);
+}
+
+.btn-medium {
+  background: var(--yellow);
+  color: var(--text);
+}
+
+.btn-medium:hover {
+  box-shadow: 0 8px 24px rgba(237, 217, 138, 0.4);
+}
+
+.btn-easy {
+  background: var(--green);
+  color: white;
+}
+
+.btn-easy:hover {
+  box-shadow: 0 8px 24px rgba(125, 174, 138, 0.4);
+}
+
+/* ============================================
+   9. STUDY COMPLETE
+   ============================================ */
+.study-complete {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.study-complete h1 {
+  font-size: 2.5rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.study-complete p {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 3rem;
+}
+
+.session-stats {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.session-stats .stat {
+  text-align: center;
+}
+
+.session-stats .value {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.session-stats .label {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-repeat {
+  background: var(--bg);
+  color: var(--butter);
+  border: none;
+  border-radius: 14px;
+  padding: 16px 32px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-repeat:hover {
+  background: var(--bg2);
+}
+
+.btn-home {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 32px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-home:hover {
+  border-color: var(--pink);
+  background: var(--cream);
+}
+
+/* ============================================
+   10. АДАПТИВНОСТЬ
+   ============================================ */
+@media (max-width: 768px) {
+  .study-container {
+    padding: 1.5rem;
+  }
+
+  .card-inner {
+    height: 280px;
+  }
+
+  .card-front h2,
+  .card-back h2 {
+    font-size: 1.5rem;
+  }
+
+  .rating-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .session-stats {
+    gap: 1.5rem;
+  }
+
+  .session-stats .value {
+    font-size: 2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-repeat,
+  .btn-home {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-inner {
+    height: 240px;
+    padding: 2rem 1.5rem;
+  }
+
+  .study-complete h1 {
+    font-size: 1.75rem;
+  }
+}
