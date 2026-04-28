@@ -2,24 +2,26 @@
 from dotenv import load_dotenv
 load_dotenv()  #Загружает переменные из .env
 
+#ОДНОВРЕМЕННО НИЧЕГО НЕ МЕНЯЕМ!!!!
+
 
 
 from sqlalchemy.orm import Session #Сеанс связи с БД (через него все: add(), commit(), query(), delete())
 from datetime import datetime, timedelta, date
-from database import engine, Base  # engine — это движок подключения к базе данных (содержит URL, драйвер, настройки).
-                                   # Base — это базовый класс для моделей (от него наследуются все таблицы).
+from database import engine, Base  #engine — это движок подключения к базе данных (содержит URL, драйвер, настройки).
+                                   #Base — это базовый класс для моделей (от него наследуются все таблицы).
 
 from fastapi import FastAPI, Depends, HTTPException, status #FastAPI — класс для создания самого приложения.
-                                    # Depends — система внедрения зависимостей (например, сессия БД, текущий пользователь).
-                                    # HTTPException — для выброса ошибок с кодами (400, 401, 404).
-                                    # status — готовые коды HTTP-статусов (status.HTTP_400_BAD_REQUEST).
+                                    #Depends — система внедрения зависимостей (например, сессия БД, текущий пользователь).
+                                    #HTTPException — для выброса ошибок с кодами (400, 401, 404).
+                                    #status — готовые коды HTTP-статусов (status.HTTP_400_BAD_REQUEST).
 
 from fastapi.security import OAuth2PasswordRequestForm #Это стандартная форма OAuth2 с полями username и password.
-                                                       # FastAPI сам создаст UI для ввода в документации /docs.
-                               # Зачем: Чтобы указать, сколько времени будет действовать токен (например, 30 минут).
+                                                       #FastAPI сам создаст UI для ввода в документации /docs.
+                               #Зачем: Чтобы указать, сколько времени будет действовать токен (например, 30 минут).
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-import models, database, schemas, auth # Импортирует локальные модули.
+import models, database, schemas, auth #Импортирует локальные модули.
 from datetime import datetime, timedelta, date
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
@@ -731,7 +733,7 @@ async def get_detailed_stats(
 
 
 
-# Добавьте ваш Google Client ID сюда (лучше вынести в .env, но пока так)
+
 GOOGLE_CLIENT_ID = "1089661556109-23mb88jsobm9572sl7spgiirt3lbu1gr.apps.googleusercontent.com"
 
 
@@ -743,6 +745,7 @@ GOOGLE_CLIENT_ID = "1089661556109-23mb88jsobm9572sl7spgiirt3lbu1gr.apps.googleus
 
 
 # cd justflip-frontend
+# npm install
 # npm run dev <-- это во второй терминал (сам сайт, фиолетовый)
 # python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
