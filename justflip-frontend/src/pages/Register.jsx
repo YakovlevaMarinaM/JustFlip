@@ -55,17 +55,6 @@ function Register() {
 
   return (
     <div className="register-page">
-      <div className="bg-cards">
-        <div className="bg-card">apple</div>
-        <div className="bg-card">учиться</div>
-        <div className="bg-card">column</div>
-        <div className="bg-card">flip</div>
-        <div className="bg-card">palabra</div>
-        <div className="bg-card">память</div>
-        <div className="bg-card">learn</div>
-      </div>
-      <div className="glow"></div>
-
       <div className="card-wrap">
         <div className="card">
           <div className="logo">

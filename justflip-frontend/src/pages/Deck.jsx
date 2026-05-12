@@ -102,7 +102,7 @@ function Deck() {
     }
   }
 
-  if (loading) return <div className="loading-page">Загрузка...</div>
+  if (loading) return <div className="loading-page">загрузка...</div>
 
   return (
     <div className="deck-page">
@@ -169,5 +169,4 @@ function Deck() {
     </div>
   )
 }
-
 export default Deck

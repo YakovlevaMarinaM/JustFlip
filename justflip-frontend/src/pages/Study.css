@@ -1,13 +1,9 @@
-/* ============================================
-   1. СБРОС И БАЗА
-   ============================================ */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* 2. ЦВЕТОВЫЕ ПЕРЕМЕННЫЕ */
 :root {
   --bg:       #D0B0B0;
   --bg2:      #BC8F8F;
@@ -26,9 +22,6 @@
   --yellow:   #EDD98A;
 }
 
-/* ============================================
-   3. СТРАНИЦА
-   ============================================ */
 .study-page {
   min-height: 100vh;
   width: 100%;
@@ -37,61 +30,6 @@
   overflow-x: hidden;
 }
 
-/* ============================================
-   4. ФОН
-   ============================================ */
-.bg-cards {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.bg-card {
-  position: absolute;
-  border-radius: 16px;
-  border: 1px solid rgba(212, 165, 160, 0.2);
-  background: rgba(212, 165, 160, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Montserrat', sans-serif;
-  color: rgba(212, 165, 160, 0.3);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-  text-transform: uppercase;
-  animation: floatCard linear infinite;
-}
-
-.bg-card:nth-child(1) { width: 120px; height: 80px; top: 8%; left: 6%; animation-duration: 18s; }
-.bg-card:nth-child(2) { width: 90px; height: 60px; top: 20%; left: 80%; animation-duration: 22s; animation-delay: -4s; }
-.bg-card:nth-child(3) { width: 140px; height: 90px; top: 55%; left: 3%; animation-duration: 26s; animation-delay: -8s; }
-
-@keyframes floatCard {
-  0% { transform: translateY(0px) rotate(-3deg); opacity: 0.6; }
-  33% { transform: translateY(-18px) rotate(2deg); opacity: 1; }
-  66% { transform: translateY(-8px) rotate(-1deg); opacity: 0.8; }
-  100% { transform: translateY(0px) rotate(-3deg); opacity: 0.6; }
-}
-
-.glow {
-  position: fixed;
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212, 165, 160, 0.1) 0%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ============================================
-   5. КОНТЕЙНЕР
-   ============================================ */
 .study-container {
   position: relative;
   z-index: 10;
@@ -103,9 +41,6 @@
   flex-direction: column;
 }
 
-/* ============================================
-   6. HEADER
-   ============================================ */
 .study-header {
   display: flex;
   justify-content: space-between;
@@ -119,9 +54,6 @@
   font-weight: 500;
 }
 
-/* ============================================
-   7. FLASHCARD
-   ============================================ */
 .flashcard {
   flex: 1;
   display: flex;
@@ -193,9 +125,6 @@
   max-width: 80%;
 }
 
-/* ============================================
-   8. RATING BUTTONS
-   ============================================ */
 .rating-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -245,9 +174,6 @@
   box-shadow: 0 8px 24px rgba(125, 174, 138, 0.4);
 }
 
-/* ============================================
-   9. STUDY COMPLETE
-   ============================================ */
 .study-complete {
   flex: 1;
   display: flex;
@@ -337,60 +263,6 @@
   background: var(--cream);
 }
 
-/* ============================================
-   10. АДАПТИВНОСТЬ
-   ============================================ */
-@media (max-width: 768px) {
-  .study-container {
-    padding: 1.5rem;
-  }
-
-  .card-inner {
-    height: 280px;
-  }
-
-  .card-front h2,
-  .card-back h2 {
-    font-size: 1.5rem;
-  }
-
-  .rating-buttons {
-    grid-template-columns: 1fr;
-  }
-
-  .session-stats {
-    gap: 1.5rem;
-  }
-
-  .session-stats .value {
-    font-size: 2rem;
-  }
-
-  .actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .btn-repeat,
-  .btn-home {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .card-inner {
-    height: 240px;
-    padding: 2rem 1.5rem;
-  }
-
-  .study-complete h1 {
-    font-size: 1.75rem;
-  }
-}
-
-/* ============================================
-   11. КНОПКА-ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА (НОВОЕ)
-   ============================================ */
 .repeat-mode-toggle {
   display: flex;
   justify-content: center;
@@ -416,9 +288,6 @@
   box-shadow: 0 8px 25px rgba(212, 165, 160, 0.6);
 }
 
-/* ============================================
-   12. КНОПКА ЗАВЕРШЕНИЯ (НОВОЕ)
-   ============================================ */
 .btn-finish-session {
   background: linear-gradient(135deg, #D4A5A0 0%, #B8887F 100%);
   color: white;
@@ -441,16 +310,3 @@
   box-shadow: 0 8px 25px rgba(212, 165, 160, 0.6);
   filter: brightness(1.1);
 }
-
-@media (max-width: 480px) {
-  .study-header {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .btn-finish-session {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-  }
-}
-

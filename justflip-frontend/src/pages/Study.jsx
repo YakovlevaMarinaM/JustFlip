@@ -63,28 +63,22 @@ function Study() {
   if (completed) {
     return (
       <div className="study-page">
-        <div className="bg-cards">
-          <div className="bg-card">apple</div>
-          <div className="bg-card">learn</div>
-        </div>
-        <div className="glow"></div>
-
         <div className="study-complete">
-          <h1>🎉 Сессия завершена!</h1>
+          <h1>Сессия завершена!🎉</h1>
           <p>Отличная работа — продолжай в том же духе</p>
 
           <div className="session-stats">
             <div className="stat">
               <span className="value">{sessionStats.easy}</span>
-              <span className="label">Легко</span>
+              <span className="label">легкотня</span>
             </div>
             <div className="stat">
               <span className="value">{sessionStats.medium}</span>
-              <span className="label">Средне</span>
+              <span className="label">ну нормик</span>
             </div>
             <div className="stat">
               <span className="value">{sessionStats.hard}</span>
-              <span className="label">Сложно</span>
+              <span className="label">тяжко...</span>
             </div>
           </div>
 
@@ -117,13 +111,13 @@ function Study() {
             </button>
 
             <button className="btn-home" onClick={() => navigate('/dashboard')}>
-              На главную
+              на главную
             </button>
           </div>
 
           {!forceMode && (
             <p style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '10px' }}>
-              Включи режим "Все слова", чтобы повторить ещё раз прямо сейчас
+              включи режим "Все слова", чтобы повторить ещё раз прямо сейчас
             </p>
           )}
         </div>
@@ -134,33 +128,27 @@ function Study() {
   // === ОСНОВНОЙ ЭКРАН ОБУЧЕНИЯ ===
   return (
     <div className="study-page">
-      <div className="bg-cards">
-        <div className="bg-card">apple</div>
-        <div className="bg-card">учиться</div>
-      </div>
-      <div className="glow"></div>
-
       <div className="study-container">
         <header className="study-header">
           <button className="btn-back" onClick={() => navigate('/dashboard')}>
-            ← На главную
+            ← на главную
           </button>
 
           <button
             className="btn-finish-session"
             onClick={() => setCompleted(true)}
           >
-             Завершить
+             завершить
           </button>
 
-          <span>Учу… Слово 1 из 10</span>
+          <span>учу…</span>
         </header>
 
         <div className="flashcard" onClick={() => setFlipped(!flipped)}>
           <div className={`card-inner ${flipped ? 'flipped' : ''}`}>
             <div className="card-front">
               <h2>{word?.term}</h2>
-              <p className="hint">Нажми, чтобы перевернуть</p>
+              <p className="hint">нажми, чтобы перевернуть</p>
             </div>
             <div className="card-back">
               <h2>{word?.definition}</h2>
@@ -172,13 +160,13 @@ function Study() {
         {flipped && (
           <div className="rating-buttons">
             <button className="btn-hard" onClick={() => submitResult('hard')}>
-              😰 Сложно
+              тяжко...
             </button>
             <button className="btn-medium" onClick={() => submitResult('medium')}>
-              🤔 Средне
+              ну нормик)
             </button>
             <button className="btn-easy" onClick={() => submitResult('easy')}>
-              😊 Легко
+              легкотня
             </button>
           </div>
         )}
@@ -188,4 +176,3 @@ function Study() {
 }
 
 export default Study
-
