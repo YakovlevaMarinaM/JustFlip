@@ -753,4 +753,3 @@ if __name__ == "__main__":
 # npm install
 # npm run dev <-- это во второй терминал (сам сайт, фиолетовый)
 # python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-
