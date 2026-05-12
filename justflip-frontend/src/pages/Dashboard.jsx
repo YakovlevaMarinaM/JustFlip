@@ -23,31 +23,35 @@ function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token')
+      if (!token) { navigate('/login'); return }
 
       const decksResponse = await fetch('http://localhost:8000/api/decks', {
         headers: { 'Authorization': `Bearer ${token}` }
       })
-
-      if (decksResponse.ok) {
-        const decksData = await decksResponse.json()
-        setDecks(decksData)
-
-        const statsResponse = await fetch('http://localhost:8000/api/study/stats', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
-
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json()
-          setStats({
-            currentStreak: statsData.current_streak || 0,
-            mastered: statsData.mastered || 0,
-            dueToday: statsData.due_now || 0,
-            totalDecks: decksData.length
-          })
+      if (!decksResponse.ok) {
+        if (decksResponse.status === 401) {
+          localStorage.removeItem('token')
+          navigate('/login')
         }
+        return
       }
-    } catch (err) {
-      console.error('Error:', err)
+
+      const decksData = await decksResponse.json()
+      setDecks(decksData)
+
+      const statsResponse = await fetch('http://localhost:8000/api/study/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json()
+        setStats({
+          currentStreak: statsData.current_streak || 0,
+          mastered: statsData.mastered || 0,
+          dueToday: statsData.due_now || 0,
+          totalDecks: decksData.length
+        })
+      }
+    } catch {
     } finally {
       setLoading(false)
     }
@@ -55,28 +59,23 @@ function Dashboard() {
 
   const createDeck = async (e) => {
     e.preventDefault()
-    try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:8000/api/decks', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          title: newDeckTitle,
-          description: newDeckDescription
-        })
-      })
-      if (response.ok) {
-        setShowModal(false)
-        setNewDeckTitle('')
-        setNewDeckDescription('')
-        fetchDashboardData()
-      }
-    } catch (err) {
-      console.error('Error creating deck:', err)
-    }
+    const token = localStorage.getItem('token')
+
+    const response = await fetch('http://localhost:8000/api/decks', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title: newDeckTitle, description: newDeckDescription })
+    })
+
+    if (!response.ok) return
+
+    setShowModal(false)
+    setNewDeckTitle('')
+    setNewDeckDescription('')
+    fetchDashboardData()
   }
 
   const handleLogout = () => {
@@ -86,19 +85,6 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
-      {/* Фоновые карточки */}
-      <div className="bg-cards">
-        <div className="bg-card">apple</div>
-        <div className="bg-card">учиться</div>
-        <div className="bg-card">column</div>
-        <div className="bg-card">flip</div>
-        <div className="bg-card">palabra</div>
-        <div className="bg-card">память</div>
-        <div className="bg-card">learn</div>
-      </div>
-
-      <div className="glow"></div>
-
       <div className="dashboard-container">
         {/* Header */}
         <header className="dashboard-header">
@@ -113,10 +99,10 @@ function Dashboard() {
           </div>
 
           <div className="header-actions">
-            <button className="btn-new-deck" onClick={() => setShowModal(true)}>
+            <button type="button" className="btn-new-deck" onClick={() => setShowModal(true)}>
               + Новая колода
             </button>
-            <button className="btn-logout" onClick={handleLogout}>
+            <button type="button" className="btn-logout" onClick={handleLogout}>
               Выйти
             </button>
           </div>
@@ -151,7 +137,7 @@ function Dashboard() {
           <div className="study-reminder">
             <h2>Время повторить слова!</h2>
             <p>У тебя есть слова для повторения сегодня</p>
-            <button className="btn-study" onClick={() => navigate('/study')}>
+            <button type="button" className="btn-study" onClick={() => navigate('/study')}>
               Начать
             </button>
           </div>
@@ -162,8 +148,8 @@ function Dashboard() {
           <div className="section-header">
             <h2>Мои колоды</h2>
             <div className="section-actions">
-              <button className="btn-secondary">Все колоды</button>
-              <button className="btn-secondary" onClick={() => setShowModal(true)}>
+              <button type="button" className="btn-secondary">Все колоды</button>
+              <button type="button" className="btn-secondary" onClick={() => setShowModal(true)}>
                 Создать колоду
               </button>
             </div>
@@ -173,8 +159,8 @@ function Dashboard() {
             <p className="loading">Загрузка…</p>
           ) : decks.length === 0 ? (
             <div className="empty-state">
-              <p>📭 Пока нет колод</p>
-              <button className="btn-create-first" onClick={() => setShowModal(true)}>
+              <p>Пока нет колод</p>
+              <button type="button" className="btn-create-first" onClick={() => setShowModal(true)}>
                 Создать первую колоду
               </button>
             </div>
@@ -187,11 +173,7 @@ function Dashboard() {
                   onClick={() => navigate(`/deck/${deck.id}`)}
                 >
                   <h3>{deck.title}</h3>
-                  <p>{deck.description || 'Нет описания'}</p>
-                  <div className="deck-stats">
-                    <span>0 слов</span>
-                    <span>0 на повтор</span>
-                  </div>
+                  <p className="deck-description">{deck.description || 'Нет описания'}</p>
                 </div>
               ))}
             </div>
@@ -219,17 +201,14 @@ function Dashboard() {
                   <label htmlFor="description">Описание</label>
                   <textarea
                     id="description"
+                    className="deck-description-input"
                     value={newDeckDescription}
                     onChange={(e) => setNewDeckDescription(e.target.value)}
                     placeholder="Опиши колоду"
                   />
                 </div>
                 <div className="modal-actions">
-                  <button
-                    type="button"
-                    className="btn-cancel"
-                    onClick={() => setShowModal(false)}
-                  >
+                  <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
                     Отмена
                   </button>
                   <button type="submit" className="btn-create">
