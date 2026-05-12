@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom' // ← Добавили useSearchParams
 import './Study.css'
 
 function Study() {
@@ -7,6 +7,13 @@ function Study() {
   const [flipped, setFlipped] = useState(false)
   const [sessionStats, setSessionStats] = useState({ easy: 0, medium: 0, hard: 0 })
   const [completed, setCompleted] = useState(false)
+
+  // Инициализируем forceMode сразу из URL параметров, если они есть
+  const [searchParams] = useSearchParams()
+  const urlForce = searchParams.get('force') === 'true'
+
+  const [forceMode, setForceMode] = useState(urlForce)
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -16,18 +23,24 @@ function Study() {
   const fetchNextWord = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:8000/api/study/next', {
+      const url = `http://localhost:8000/api/study/next?force=${forceMode}`
+      console.log(' Запрос:', url)
+
+      const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
+
       if (response.ok) {
         const data = await response.json()
         setWord(data)
         setFlipped(false)
+        setCompleted(false)
       } else {
+        console.log('Слов нет, завершаем сессию')
         setCompleted(true)
       }
     } catch (err) {
-      console.error('Error:', err)
+      console.error('Ошибка сети:', err)
       setCompleted(true)
     }
   }
@@ -39,7 +52,6 @@ function Study() {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       })
-
       setSessionStats(prev => ({ ...prev, [difficulty]: prev[difficulty] + 1 }))
       fetchNextWord()
     } catch (err) {
@@ -47,6 +59,7 @@ function Study() {
     }
   }
 
+  // === ЭКРАН ЗАВЕРШЕНИЯ СЕССИИ ===
   if (completed) {
     return (
       <div className="study-page">
@@ -75,19 +88,50 @@ function Study() {
             </div>
           </div>
 
-          <div className="actions">
-            <button className="btn-repeat" onClick={() => { setCompleted(false); fetchNextWord() }}>
-              Повторить ещё раз
+          <div className="repeat-mode-toggle">
+            <button
+              className="mode-toggle-btn"
+              onClick={() => setForceMode(!forceMode)}
+            >
+              {forceMode ? ' Режим: Все слова' : ' Режим: По расписанию'}
             </button>
+          </div>
+
+          <div className="actions">
+            <button
+              className="btn-repeat"
+              disabled={!forceMode}
+              onClick={async () => {
+                setSessionStats({ easy: 0, medium: 0, hard: 0 })
+                setCompleted(false)
+                setTimeout(() => {
+                  fetchNextWord()
+                }, 100)
+              }}
+              style={{
+                opacity: !forceMode ? 0.5 : 1,
+                cursor: !forceMode ? 'not-allowed' : 'pointer'
+              }}
+            >
+              {forceMode ? 'Повторить ещё раз' : 'Слова закончились'}
+            </button>
+
             <button className="btn-home" onClick={() => navigate('/dashboard')}>
               На главную
             </button>
           </div>
+
+          {!forceMode && (
+            <p style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '10px' }}>
+              Включи режим "Все слова", чтобы повторить ещё раз прямо сейчас
+            </p>
+          )}
         </div>
       </div>
     )
   }
 
+  // === ОСНОВНОЙ ЭКРАН ОБУЧЕНИЯ ===
   return (
     <div className="study-page">
       <div className="bg-cards">
@@ -101,6 +145,14 @@ function Study() {
           <button className="btn-back" onClick={() => navigate('/dashboard')}>
             ← На главную
           </button>
+
+          <button
+            className="btn-finish-session"
+            onClick={() => setCompleted(true)}
+          >
+             Завершить
+          </button>
+
           <span>Учу… Слово 1 из 10</span>
         </header>
 
@@ -136,3 +188,4 @@ function Study() {
 }
 
 export default Study
+

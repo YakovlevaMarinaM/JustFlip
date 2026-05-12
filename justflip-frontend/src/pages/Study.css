@@ -298,6 +298,8 @@
 .actions {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btn-repeat {
@@ -313,7 +315,7 @@
   transition: background 0.2s;
 }
 
-.btn-repeat:hover {
+.btn-repeat:hover:not(:disabled) {
   background: var(--bg2);
 }
 
@@ -385,3 +387,70 @@
     font-size: 1.75rem;
   }
 }
+
+/* ============================================
+   11. КНОПКА-ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА (НОВОЕ)
+   ============================================ */
+.repeat-mode-toggle {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.mode-toggle-btn {
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dk) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(212, 165, 160, 0.4);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.mode-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 165, 160, 0.6);
+}
+
+/* ============================================
+   12. КНОПКА ЗАВЕРШЕНИЯ (НОВОЕ)
+   ============================================ */
+.btn-finish-session {
+  background: linear-gradient(135deg, #D4A5A0 0%, #B8887F 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 165, 160, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-finish-session:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 165, 160, 0.6);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 480px) {
+  .study-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .btn-finish-session {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
