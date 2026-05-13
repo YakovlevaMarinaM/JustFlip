@@ -69,7 +69,7 @@ Call log:
   6  |   })
   7  | 
   8  |   test('создание новой колоды', async ({ authenticatedPage: page }) => {
-  9  |     // ✅ Кнопка в хедере имеет класс btn-new-deck
+  9  |     // Кнопка в хедере имеет класс btn-new-deck
 > 10 |     await page.click('button.btn-new-deck')
      |                ^ Error: page.click: Test timeout of 30000ms exceeded.
   11 |     
@@ -92,7 +92,7 @@ Call log:
   28 |     // Добавляем слово
   29 |     await page.click('button.btn-add-word')
   30 |     
-  31 |     // ✅ В Deck.jsx инпуты без id — используем label + input
+  31 |     // В Deck.jsx инпуты без id — используем label + input
   32 |     await page.locator('label:has-text("Слово / термин") + input').fill('apple')
   33 |     await page.locator('label:has-text("Перевод / определение") + input').fill('яблоко')
   34 |     

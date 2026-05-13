@@ -21,7 +21,6 @@ function Dashboard() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
-
   const navigate = useNavigate()
 
   useEffect(() => {

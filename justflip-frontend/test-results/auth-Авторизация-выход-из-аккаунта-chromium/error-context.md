@@ -70,13 +70,13 @@ Call log:
   7  |     
   8  |     await page.goto('http://localhost:5173/register')
   9  |     
-  10 |     // ✅ Селекторы по ID
+  10 |     // Селекторы по ID
   11 |     await page.fill('#username', username)
   12 |     await page.fill('#email', `${username}@test.com`)
   13 |     await page.fill('#password', 'Test123!')
   14 |     await page.click('button[type="submit"]')
   15 |     
-  16 |     // ✅ Ждём элемент дашборда
+  16 |     // Ждём элемент дашборда
   17 |     await page.waitForSelector('.logo-text', { timeout: 20000 })
   18 |     await expect(page.locator('.logo-text')).toContainText('JustFlip')
   19 |   })
@@ -96,7 +96,7 @@ Call log:
   33 |   })
   34 | 
   35 |   test('выход из аккаунта', async ({ authenticatedPage }) => {
-  36 |     // ✅ Кнопка "Выйти" имеет класс btn-logout
+  36 |     // Кнопка "Выйти" имеет класс btn-logout
 > 37 |     await authenticatedPage.click('button.btn-logout')
      |                             ^ Error: page.click: Test timeout of 30000ms exceeded.
   38 |     await authenticatedPage.waitForSelector('#username', { timeout: 10000 })
