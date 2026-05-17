@@ -4,29 +4,29 @@ test.describe('Авторизация', () => {
   test('регистрация нового пользователя', async ({ page }) => {
     const username = `testuser_${Date.now()}`
     page.on('dialog', dialog => dialog.accept())
-    
+
     await page.goto('http://localhost:5173/register')
-    
-    // Селекторы по ID
+
     await page.fill('#username', username)
     await page.fill('#email', `${username}@test.com`)
     await page.fill('#password', 'Test123!')
+    await page.fill('#confirm', 'Test123!')  // обязательное поле подтверждения пароля
     await page.click('button[type="submit"]')
-    
-    // Ждём элемент дашборда
+
+    // После регистрации сразу попадаем на дашборд
     await page.waitForSelector('.logo-text', { timeout: 20000 })
     await expect(page.locator('.logo-text')).toContainText('JustFlip')
   })
 
   test('вход с неверным паролем', async ({ page }) => {
     page.on('dialog', dialog => dialog.accept())
-    
+
     await page.goto('http://localhost:5173/login')
-    
+
     await page.fill('#username', 'wronguser')
     await page.fill('#password', 'wrongpass')
     await page.click('button[type="submit"]')
-    
+
     // Проверяем ошибку
     await expect(page.locator('.global-error')).toBeVisible({ timeout: 5000 })
     await page.waitForSelector('#username', { timeout: 5000 })

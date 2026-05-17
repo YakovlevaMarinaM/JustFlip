@@ -144,16 +144,32 @@ function Deck() {
               <h2>{editingWord ? 'Редактировать слово' : 'Добавить слово'}</h2>
               <form onSubmit={saveWord}>
                 <div className="form-group">
-                  <label>Слово / термин</label>
-                  <input type="text" value={newWord.term} onChange={e => setNewWord({...newWord, term: e.target.value})} required />
+                  <label htmlFor="term">Слово / термин</label>
+                  <input
+                    id="term"
+                    type="text"
+                    value={newWord.term}
+                    onChange={e => setNewWord({...newWord, term: e.target.value})}
+                    required
+                  />
                 </div>
                 <div className="form-group">
-                  <label>Перевод / определение</label>
-                  <input type="text" value={newWord.definition} onChange={e => setNewWord({...newWord, definition: e.target.value})} required />
+                  <label htmlFor="definition">Перевод / определение</label>
+                  <input
+                    id="definition"
+                    type="text"
+                    value={newWord.definition}
+                    onChange={e => setNewWord({...newWord, definition: e.target.value})}
+                    required
+                  />
                 </div>
                 <div className="form-group">
-                  <label>Пример (необязательно)</label>
-                  <textarea value={newWord.example} onChange={e => setNewWord({...newWord, example: e.target.value})} />
+                  <label htmlFor="example">Пример (необязательно)</label>
+                  <textarea
+                    id="example"
+                    value={newWord.example}
+                    onChange={e => setNewWord({...newWord, example: e.target.value})}
+                  />
                 </div>
                 <div className="modal-actions">
                   <button type="button" className="btn-cancel" onClick={closeModal}>Отмена</button>

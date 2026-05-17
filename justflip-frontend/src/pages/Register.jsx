@@ -17,12 +17,18 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setIsLoading(true)
 
+    if (password !== confirm) {
+      setError('Пароли не совпадают')
+      return
+    }
+
+    setIsLoading(true)
     try {
       await authAPI.register(username, email, password)
-      alert('Регистрация успешна! Теперь войдите.')
-      navigate('/login')
+      const loginResp = await authAPI.login(username, password)
+      localStorage.setItem('token', loginResp.data.access_token)
+      navigate('/dashboard')
     } catch (err) {
       setError('Ошибка регистрации. Возможно, пользователь уже существует.')
     } finally {
@@ -41,7 +47,6 @@ function Register() {
       if (res.ok) {
         const data = await res.json()
         localStorage.setItem('token', data.access_token)
-        alert('Регистрация через Google успешна!')
         navigate('/dashboard')
       } else {
         const errData = await res.json()

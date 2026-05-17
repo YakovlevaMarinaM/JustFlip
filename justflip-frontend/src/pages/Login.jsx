@@ -11,7 +11,6 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Обычный вход
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -20,7 +19,6 @@ function Login() {
     try {
       const response = await authAPI.login(username, password)
       localStorage.setItem('token', response.data.access_token)
-      alert('Вход успешен!')
       navigate('/dashboard')
     } catch (err) {
       console.error(err)
@@ -30,14 +28,11 @@ function Login() {
     }
   }
 
-  // Вход через Google
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setIsLoading(true)
       setError('')
       try {
-        console.log('Google token response:', tokenResponse)
-
         const res = await fetch('http://localhost:8000/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -50,7 +45,6 @@ function Login() {
         if (res.ok) {
           const data = await res.json()
           localStorage.setItem('token', data.access_token)
-          alert('Вход через Google успешен!')
           navigate('/dashboard')
         } else {
           const errData = await res.json()
@@ -86,13 +80,11 @@ function Login() {
             <span className="logo-text">JustFlip</span>
           </div>
 
-          {/* Заголовки */}
           <h1 className="heading">Вход</h1>
           <p className="subheading">Добро пожаловать обратно! ✦</p>
 
-          {/* Форма */}
           <form onSubmit={handleSubmit}>
-            {/* Username */}
+
             <div className="form-group">
               <label htmlFor="username">Имя пользователя</label>
               <div className="input-wrap">
@@ -112,7 +104,6 @@ function Login() {
               </div>
             </div>
 
-            {/* Password */}
             <div className="form-group">
               <label htmlFor="password">Пароль</label>
               <div className="input-wrap">
@@ -132,10 +123,8 @@ function Login() {
               </div>
             </div>
 
-            {/* Ошибка */}
             {error && <div className="global-error visible">{error}</div>}
 
-            {/* Кнопка входа */}
             <button
               type="submit"
               className={`btn-submit ${isLoading ? 'loading' : ''}`}
@@ -146,10 +135,8 @@ function Login() {
             </button>
           </form>
 
-          {/* Разделитель */}
           <div className="divider"><span>или</span></div>
 
-          {/* Google кнопка */}
           <button
             onClick={() => googleLogin()}
             disabled={isLoading}
